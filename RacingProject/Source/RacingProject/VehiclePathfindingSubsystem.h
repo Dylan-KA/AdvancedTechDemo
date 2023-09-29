@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
+#include "Checkpoint.h"
 #include "VehiclePathfindingSubsystem.generated.h"
 
 /**
@@ -15,6 +16,6 @@ class RACINGPROJECT_API UVehiclePathfindingSubsystem : public UWorldSubsystem
 	GENERATED_BODY()
 
 protected:
-	
+	TArray<ACheckpoint>
 	
 };
