@@ -8,7 +8,7 @@
 #include "VehiclePathfindingSubsystem.generated.h"
 
 /**
- * 
+ * Pathfinding Subsystem provides logic for where to travel to
  */
 UCLASS()
 class RACINGPROJECT_API UVehiclePathfindingSubsystem : public UWorldSubsystem
@@ -16,6 +16,10 @@ class RACINGPROJECT_API UVehiclePathfindingSubsystem : public UWorldSubsystem
 	GENERATED_BODY()
 
 protected:
-	TArray<ACheckpoint>
-	
+	UPROPERTY()
+	TArray<ACheckpoint*> RaceCheckpoints;
+
+public:
+	//Populates and returns RaceCheckpoints
+	TArray<ACheckpoint*> PopulateRaceCheckpoints();
 };
