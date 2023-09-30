@@ -20,6 +20,12 @@ protected:
 	TArray<ACheckpoint*> RaceCheckpoints;
 
 public:
-	//Populates and returns RaceCheckpoints
+	// Populates and returns RaceCheckpoints
 	TArray<ACheckpoint*> PopulateRaceCheckpoints();
+
+	// Based on current position at checkpoint, determine where (how far left or right)
+	// if there is another checkpoint to travel to
+	// in the next checkpoint to aim to travel to
+	FVector ArrivedAtCheckpoint(FVector CurrentPosition, ACheckpoint* ArrivedCheckpoint, TArray<ACheckpoint*> VehicleCheckpoints);
+	
 };

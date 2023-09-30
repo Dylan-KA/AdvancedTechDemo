@@ -45,39 +45,43 @@ public:
 
 	// Reference to the Actor as a Wheeled Vehicle Pawn
 	// Used for Controlling enemy movement
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	AWheeledVehiclePawn* WheeledVehiclePawn; 
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	//Enemy Difficulty
+	// Enemy Difficulty
 	UPROPERTY(EditAnywhere)
 	TEnumAsByte<EDifficulty> VehicleDifficulty = EDifficulty::Easy;
 
-	//Current Enemy State
+	// Current Enemy State
 	UPROPERTY(EditAnywhere)
 	EEnemyState CurrentState = EEnemyState::NormalDriving;
 	
-	//List of all vehicles that have been detected
+	// List of all vehicles that have been detected
 	UPROPERTY(EditAnywhere)
 	TArray<AActor*> DetectedVehicles;
 
-	//List of box components (one on each side of the car)
+	// List of box components (one on each side of the car)
 	UPROPERTY(EditAnywhere)
 	TArray<UBoxComponent*> BoxComponents;
 
-	//Pathfinding Subsystem provides logic for where to travel to
+	// Pathfinding Subsystem provides logic for where to travel to
 	UPROPERTY()
 	UVehiclePathfindingSubsystem* VehiclePathfindingSubsystem;
 
-	//An in-order list of checkpoints that the EnemyVehicle needs to pass
+	// An in-order list of checkpoints that the EnemyVehicle needs to pass
 	UPROPERTY(VisibleAnywhere)
 	TArray<ACheckpoint*> VehicleCheckpoints;
 
+	// Position of where the enemy is currently trying to get to
+	// Changes based on current state and is not necessarily the next checkpoint
+	FVector CurrentObjective;
+	
 	//Tick functions for each State
-	void TickNormalDriving();	//Drive towards next checkpoint
+	void TickNormalDriving(float DeltaTime);	//Drive towards next checkpoint
 	void TickOvertake();		//Overtake one car in front
 	void TickDefend();			//Position car to block other cars from overtaking
 	void TickRecover();			//Return to track after going off-course.

@@ -19,3 +19,17 @@ TArray<ACheckpoint*> UVehiclePathfindingSubsystem::PopulateRaceCheckpoints()
 	}
 	return RaceCheckpoints;
 }
+
+FVector UVehiclePathfindingSubsystem::ArrivedAtCheckpoint(FVector CurrentPosition, ACheckpoint* ArrivedCheckpoint, TArray<ACheckpoint*> VehicleCheckpoints)
+{
+	FVector DestinationLocation;
+	if (!VehicleCheckpoints.IsEmpty()) 	// if there is another checkpoint to travel to
+	{
+		// Calculate position relative to the centre of the arrived checkpoint
+		// And return the position of the next checkpoint with the same offset
+	} else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Reached final checkpoint, none left"))
+	}
+	return DestinationLocation;
+}
