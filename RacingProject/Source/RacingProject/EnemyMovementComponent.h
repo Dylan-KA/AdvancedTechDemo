@@ -46,7 +46,10 @@ public:
 	// Reference to the Actor as a Wheeled Vehicle Pawn
 	// Used for Controlling enemy movement
 	UPROPERTY(VisibleAnywhere)
-	AWheeledVehiclePawn* WheeledVehiclePawn; 
+	AWheeledVehiclePawn* WheeledVehiclePawn;
+
+	UPROPERTY(VisibleAnywhere)
+	USkeletalMeshComponent* SkeletalMeshComponent;
 
 protected:
 	// Called when the game starts
@@ -80,12 +83,18 @@ protected:
 	// Changes based on current state and is not necessarily the next checkpoint
 	FVector CurrentObjective;
 	
-	//Tick functions for each State
+	// Tick functions for each State
 	void TickNormalDriving(float DeltaTime);	//Drive towards next checkpoint
-	void TickOvertake();		//Overtake one car in front
-	void TickDefend();			//Position car to block other cars from overtaking
-	void TickRecover();			//Return to track after going off-course.
-	void TickCatchUp();			//When really far behind, speed up.
+	void TickOvertake();						//Overtake one car in front
+	void TickDefend();							//Position car to block other cars from overtaking
+	void TickRecover();							//Return to track after going off-course.
+	void TickCatchUp();							//When really far behind, speed up.
+
+	//Timers to keep track of acceleration
+	float MaxAccelerationTime = 0.1f;
+	float AccelerationTimer = MaxAccelerationTime;
+	UPROPERTY(VisibleAnywhere)
+	bool bIsAccelerating = true;
 	
 public:	
 	// Called every frame

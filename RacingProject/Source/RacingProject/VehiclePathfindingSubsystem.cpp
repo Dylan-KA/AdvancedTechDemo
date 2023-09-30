@@ -11,7 +11,7 @@ TArray<ACheckpoint*> UVehiclePathfindingSubsystem::PopulateRaceCheckpoints()
 	for (TActorIterator<ACheckpoint> It(GetWorld()); It; ++It)
 	{
 		RaceCheckpoints.Add(*It);
-		UE_LOG(LogTemp, Warning, TEXT("Checkpoint: %s"), *(*It)->GetActorLocation().ToString())
+		//UE_LOG(LogTemp, Warning, TEXT("Checkpoint: %s"), *(*It)->GetActorLocation().ToString())
 	}
 	if (RaceCheckpoints.IsEmpty())
 	{
