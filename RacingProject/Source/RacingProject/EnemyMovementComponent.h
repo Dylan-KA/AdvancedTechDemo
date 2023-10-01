@@ -90,11 +90,18 @@ protected:
 	void TickRecover();							//Return to track after going off-course.
 	void TickCatchUp();							//When really far behind, speed up.
 
-	//Timers to keep track of acceleration
-	float MaxAccelerationTime = 0.1f;
+	// Timers to keep track of acceleration
+	float MaxAccelerationTime = 0.01f;
 	float AccelerationTimer = MaxAccelerationTime;
+	float MaxRollTime = 0.5f;
+	float RollTimer = MaxRollTime;
 	UPROPERTY(VisibleAnywhere)
 	bool bIsAccelerating = true;
+
+	// Handle rotation
+	float RotationInterpSpeed = 1.0f;
+	bool bIsRotating = false;
+	double RotationTolerance = 2.0f;
 	
 public:	
 	// Called every frame

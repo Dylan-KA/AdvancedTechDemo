@@ -27,21 +27,40 @@ void UEnemyMovementComponent::BeginPlay()
 	
 }
 
+// Drive towards next checkpoint
 void UEnemyMovementComponent::TickNormalDriving(float DeltaTime)
 {
-	// Rotated towards destination
 	FVector Direction = CurrentObjective - WheeledVehiclePawn->GetActorLocation();
-	Direction.Normalize(); // Normalize the direction vector to get a unit vector
-	UE_LOG(LogTemp, Warning, TEXT("Direction: %s"), *Direction.ToString());
-	FRotator NewRotation = Direction.Rotation();
-	NewRotation = FRotator(0,NewRotation.Yaw,0);
-	UE_LOG(LogTemp, Warning, TEXT("NewRotation: %s"), *NewRotation.ToString());
-	//SkeletalMeshComponent->AddWorldRotation(NewRotation, false, nullptr, ETeleportType::TeleportPhysics);
+	Direction.Normalize();
 
-	// Move forwards (add force is being used like a thrust boost not continuous speed)
-	if (bIsAccelerating)
+	// Calculate the rotation to face the target direction
+	FRotator TargetRotation = Direction.Rotation();
+	TargetRotation.Pitch = 0; // Ensure you only rotate around the Yaw axis
+	TargetRotation.Roll = 0; // Ensure you only rotate around the Yaw axis
+
+	// Interpolate between the current rotation and the target rotation
+	FRotator CurrentRotation = SkeletalMeshComponent->GetComponentRotation();
+	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, RotationInterpSpeed);
+
+	// Apply the new rotation to the mesh component
+	if (bIsRotating)
 	{
-		SkeletalMeshComponent->AddWorldRotation(NewRotation, false, nullptr, ETeleportType::TeleportPhysics);
+		SkeletalMeshComponent->SetWorldRotation(NewRotation, false, nullptr, ETeleportType::TeleportPhysics);
+	}
+	// Check if we are close enough to the target direction to stop rotating
+	if (FMath::IsNearlyEqual(CurrentRotation.Yaw, TargetRotation.Yaw, RotationTolerance))
+	{
+		bIsRotating = false; // Set a flag to stop further rotation if needed
+		UE_LOG(LogTemp, Warning, TEXT("Stopped rotating"))
+	} else
+	{
+		bIsRotating = true;
+		UE_LOG(LogTemp, Warning, TEXT("Started rotating"))
+	}
+	
+	// Move forwards (add force is being used like a thrust boost not continuous speed)
+	if (bIsAccelerating)	
+	{
 		SkeletalMeshComponent->AddForce(WheeledVehiclePawn->GetActorForwardVector()*10'000, NAME_None, true);
 	}
 
@@ -73,18 +92,29 @@ void UEnemyMovementComponent::TickCatchUp()
 void UEnemyMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
+
+	// Toggling between a short burst of acceleration and a short duration of the car rolling forwards
 	if (bIsAccelerating)
 	{
 		AccelerationTimer -= DeltaTime;
-	}
-	if (AccelerationTimer <= 0.0f)
+		if (AccelerationTimer <= 0.0f)
+		{
+			bIsAccelerating = false;
+			AccelerationTimer = MaxAccelerationTime;
+			//UE_LOG(LogTemp, Warning, TEXT("Stopped Acclerating"))
+		}
+	} else
 	{
-		bIsAccelerating = false;
-		AccelerationTimer = MaxAccelerationTime;
-		UE_LOG(LogTemp, Warning, TEXT("Stopped Acclerating"))
+		RollTimer -= DeltaTime;
+		if (RollTimer <= 0.0f)
+		{
+			bIsAccelerating = true;
+			RollTimer = MaxRollTime;
+			//UE_LOG(LogTemp, Warning, TEXT("Starting Acclerating"))
+		}
 	}
-	
+
+	// Calling State Tick Functions 
 	switch (CurrentState)
 	{
 	case EEnemyState::NormalDriving:
