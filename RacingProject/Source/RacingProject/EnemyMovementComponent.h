@@ -101,7 +101,8 @@ protected:
 	// Handle rotation
 	float RotationInterpSpeed = 1.0f;
 	bool bIsRotating = false;
-	double RotationTolerance = 2.0f;
+	double RotationTolerance = 10.0f;
+	float RotationSpeed = 10.0f;
 	
 public:	
 	// Called every frame

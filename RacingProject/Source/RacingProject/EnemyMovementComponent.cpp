@@ -30,6 +30,12 @@ void UEnemyMovementComponent::BeginPlay()
 // Drive towards next checkpoint
 void UEnemyMovementComponent::TickNormalDriving(float DeltaTime)
 {
+	// Move forwards (add force is being used like a thrust boost not continuous speed)
+	if (bIsAccelerating)	
+	{
+		SkeletalMeshComponent->AddForce(WheeledVehiclePawn->GetActorForwardVector()*10'000, NAME_None, true);
+	}
+
 	FVector Direction = CurrentObjective - WheeledVehiclePawn->GetActorLocation();
 	Direction.Normalize();
 
@@ -38,15 +44,20 @@ void UEnemyMovementComponent::TickNormalDriving(float DeltaTime)
 	TargetRotation.Pitch = 0; // Ensure you only rotate around the Yaw axis
 	TargetRotation.Roll = 0; // Ensure you only rotate around the Yaw axis
 
-	// Interpolate between the current rotation and the target rotation
+	// Calculate the delta rotation to add this frame
 	FRotator CurrentRotation = SkeletalMeshComponent->GetComponentRotation();
-	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, RotationInterpSpeed);
+	FRotator DeltaRotation = TargetRotation - CurrentRotation;
 
-	// Apply the new rotation to the mesh component
+	// Limit the rotation per frame to avoid overshooting
+	double MaxDeltaYaw = RotationSpeed * DeltaTime;
+	DeltaRotation.Yaw = FMath::Clamp(DeltaRotation.Yaw, -MaxDeltaYaw, MaxDeltaYaw);
+
+	// Add the delta rotation to the current rotation using AddWorldRotation()
 	if (bIsRotating)
 	{
-		SkeletalMeshComponent->SetWorldRotation(NewRotation, false, nullptr, ETeleportType::TeleportPhysics);
+		SkeletalMeshComponent->AddWorldRotation(DeltaRotation, false, nullptr, ETeleportType::TeleportPhysics);
 	}
+	
 	// Check if we are close enough to the target direction to stop rotating
 	if (FMath::IsNearlyEqual(CurrentRotation.Yaw, TargetRotation.Yaw, RotationTolerance))
 	{
@@ -56,12 +67,6 @@ void UEnemyMovementComponent::TickNormalDriving(float DeltaTime)
 	{
 		bIsRotating = true;
 		UE_LOG(LogTemp, Warning, TEXT("Started rotating"))
-	}
-	
-	// Move forwards (add force is being used like a thrust boost not continuous speed)
-	if (bIsAccelerating)	
-	{
-		SkeletalMeshComponent->AddForce(WheeledVehiclePawn->GetActorForwardVector()*10'000, NAME_None, true);
 	}
 
 	return;
