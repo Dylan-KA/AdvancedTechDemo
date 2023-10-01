@@ -17,6 +17,7 @@ TArray<ACheckpoint*> UVehiclePathfindingSubsystem::PopulateRaceCheckpoints()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("RaceCheckpoints: returning empty, no checkpoints were found"))
 	}
+	RaceCheckpoints.Sort();
 	return RaceCheckpoints;
 }
 

@@ -62,13 +62,18 @@ void UEnemyMovementComponent::TickNormalDriving(float DeltaTime)
 	if (FMath::IsNearlyEqual(CurrentRotation.Yaw, TargetRotation.Yaw, RotationTolerance))
 	{
 		bIsRotating = false; // Set a flag to stop further rotation if needed
-		UE_LOG(LogTemp, Warning, TEXT("Stopped rotating"))
+		//UE_LOG(LogTemp, Warning, TEXT("Stopped rotating"))
 	} else
 	{
 		bIsRotating = true;
-		UE_LOG(LogTemp, Warning, TEXT("Started rotating"))
+		//UE_LOG(LogTemp, Warning, TEXT("Started rotating"))
 	}
 
+	if (VehicleCheckpoints.IsEmpty())
+	{
+		CurrentState = EEnemyState::Stop;
+	}
+	
 	return;
 }
 
@@ -136,6 +141,8 @@ void UEnemyMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType
 		break;
 	case EEnemyState::CatchUp:
 		TickCatchUp();
+		break;
+	case EEnemyState::Stop:
 		break;
 	}
 	
