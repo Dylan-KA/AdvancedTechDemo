@@ -2,6 +2,7 @@
 
 
 #include "EnemyMovementComponent.h"
+#include "ChaosVehicleMovementComponent.h"
 
 // Sets default values for this component's properties
 UEnemyMovementComponent::UEnemyMovementComponent()
@@ -18,11 +19,10 @@ void UEnemyMovementComponent::BeginPlay()
 	Super::BeginPlay();
 
 	VehiclePathfindingSubsystem = GetWorld()->GetSubsystem<UVehiclePathfindingSubsystem>();
-	// Vehicle starts with all checkpoints in the race
 	VehicleCheckpoints = VehiclePathfindingSubsystem->PopulateRaceCheckpoints();
 
 	WheeledVehiclePawn = Cast<AWheeledVehiclePawn>(GetOwner());
-	SkeletalMeshComponent = GetOwner()->FindComponentByClass<USkeletalMeshComponent>();
+	MovementComponent = GetOwner()->FindComponentByClass<UChaosVehicleMovementComponent>();
 	CurrentObjective = VehicleCheckpoints[0]->GetActorLocation();
 	
 }
@@ -30,55 +30,19 @@ void UEnemyMovementComponent::BeginPlay()
 // Drive towards next checkpoint
 void UEnemyMovementComponent::TickNormalDriving(float DeltaTime)
 {
-	// Move forwards (add force is being used like a thrust boost not continuous speed)
-	if (bIsAccelerating)	
-	{
-		SkeletalMeshComponent->AddForce(WheeledVehiclePawn->GetActorForwardVector()*10'000, NAME_None, true);
-	}
-
-	FVector Direction = CurrentObjective - WheeledVehiclePawn->GetActorLocation();
-	Direction.Normalize();
-
-	// Calculate the rotation to face the target direction
-	FRotator TargetRotation = Direction.Rotation();
-	TargetRotation.Pitch = 0; // Ensure you only rotate around the Yaw axis
-	TargetRotation.Roll = 0; // Ensure you only rotate around the Yaw axis
-
-	// Calculate the delta rotation to add this frame
-	FRotator CurrentRotation = SkeletalMeshComponent->GetComponentRotation();
-	FRotator DeltaRotation = TargetRotation - CurrentRotation;
-
-	// Limit the rotation per frame to avoid overshooting
-	double MaxDeltaYaw = RotationSpeed * DeltaTime;
-	DeltaRotation.Yaw = FMath::Clamp(DeltaRotation.Yaw, -MaxDeltaYaw, MaxDeltaYaw);
-
-	// Add the delta rotation to the current rotation using AddWorldRotation()
-	if (bIsRotating)
-	{
-		SkeletalMeshComponent->AddWorldRotation(DeltaRotation, false, nullptr, ETeleportType::TeleportPhysics);
-	}
-	
-	// Check if we are close enough to the target direction to stop rotating
-	if (FMath::IsNearlyEqual(CurrentRotation.Yaw, TargetRotation.Yaw, RotationTolerance))
-	{
-		bIsRotating = false; // Set a flag to stop further rotation if needed
-		//UE_LOG(LogTemp, Warning, TEXT("Stopped rotating"))
-	} else
-	{
-		bIsRotating = true;
-		//UE_LOG(LogTemp, Warning, TEXT("Started rotating"))
-	}
-
-	if (VehicleCheckpoints.IsEmpty())
-	{
-		CurrentState = EEnemyState::Stop;
-	}
+	//Set the current objective 
+	CurrentObjective = VehicleCheckpoints[0]->GetActorLocation();
+	UE_LOG(LogTemp, Warning, TEXT("CurrentObjective: %s"), *CurrentObjective.ToString())
+	MovementComponent->SetThrottleInput(VehicleSpeed);
+	// Steers the car in the direction of CurrentObjective 
+	TurnTowardsDirection();
 	
 	return;
 }
 
 void UEnemyMovementComponent::TickOvertake()
 {
+	
 	return;
 }
 
@@ -97,32 +61,47 @@ void UEnemyMovementComponent::TickCatchUp()
 	return;
 }
 
+FVector UEnemyMovementComponent::CalculateDirection()
+{
+	FVector Direction = CurrentObjective - WheeledVehiclePawn->GetActorLocation();
+	Direction.Normalize();
+	return Direction;
+}
+
+void UEnemyMovementComponent::TurnTowardsDirection()
+{
+	FVector ActorForwardVector = WheeledVehiclePawn->GetActorForwardVector();
+	FVector Direction = CalculateDirection();
+	//UE_LOG(LogTemp, Warning, TEXT("Direction: %s"), *Direction.ToString())
+	float DotProduct = FVector::DotProduct(ActorForwardVector, Direction);
+
+	// Check if the dot product is positive or negative to determine left or right.
+	if (DotProduct < -0.1)
+	{
+		// Direction is to the right of the actor.
+		MovementComponent->SetThrottleInput(0.2);
+		MovementComponent->SetSteeringInput(VehicleTurningSpeed);
+		UE_LOG(LogTemp, Warning, TEXT("Turning RIGHT"))
+	}
+	else if (DotProduct > 0.1)
+	{
+		// Direction is to the left of the actor.
+		MovementComponent->SetThrottleInput(0.2);
+		MovementComponent->SetSteeringInput(-VehicleTurningSpeed);
+		UE_LOG(LogTemp, Warning, TEXT("Turning LEFT"))
+	}
+	else
+	{
+		// Direction is roughly in front or behind the actor.
+		MovementComponent->SetSteeringInput(0);
+		UE_LOG(LogTemp, Warning, TEXT("Driving STRAIGHT"))
+	}
+}
 
 // Called every frame
 void UEnemyMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// Toggling between a short burst of acceleration and a short duration of the car rolling forwards
-	if (bIsAccelerating)
-	{
-		AccelerationTimer -= DeltaTime;
-		if (AccelerationTimer <= 0.0f)
-		{
-			bIsAccelerating = false;
-			AccelerationTimer = MaxAccelerationTime;
-			//UE_LOG(LogTemp, Warning, TEXT("Stopped Acclerating"))
-		}
-	} else
-	{
-		RollTimer -= DeltaTime;
-		if (RollTimer <= 0.0f)
-		{
-			bIsAccelerating = true;
-			RollTimer = MaxRollTime;
-			//UE_LOG(LogTemp, Warning, TEXT("Starting Acclerating"))
-		}
-	}
 
 	// Calling State Tick Functions 
 	switch (CurrentState)
@@ -145,6 +124,11 @@ void UEnemyMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	case EEnemyState::Stop:
 		break;
 	}
-	
+
+	if (VehicleCheckpoints.IsEmpty())
+	{
+		CurrentState = EEnemyState::Stop;
+	}
+
 }
 

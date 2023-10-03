@@ -23,7 +23,6 @@ void ACheckpoint::BeginPlay()
 	
 	if (CheckpointCollider)
 	{
-
 		CheckpointCollider->OnComponentBeginOverlap.AddDynamic(this, &ACheckpoint::OnPickupOverlap);
 	}
 	else

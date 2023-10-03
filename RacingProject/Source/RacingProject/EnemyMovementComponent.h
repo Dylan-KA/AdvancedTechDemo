@@ -40,27 +40,18 @@ class RACINGPROJECT_API UEnemyMovementComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+protected:
 	// Sets default values for this component's properties
 	UEnemyMovementComponent();
 
 	// Reference to the Actor as a Wheeled Vehicle Pawn
-	// Used for Controlling enemy movement
 	UPROPERTY(VisibleAnywhere)
 	AWheeledVehiclePawn* WheeledVehiclePawn;
 
-	UPROPERTY(VisibleAnywhere)
-	USkeletalMeshComponent* SkeletalMeshComponent;
-
-	// An in-order list of checkpoints that the EnemyVehicle needs to pass
-	UPROPERTY(VisibleAnywhere)
-	TArray<ACheckpoint*> VehicleCheckpoints;
-
-	// Position of where the enemy is currently trying to get to
-	// Changes based on current state and is not necessarily the next checkpoint
-	FVector CurrentObjective;
+	// The Chaos Movement system that is doing the underlying physics
+	UPROPERTY()
+	UChaosVehicleMovementComponent* MovementComponent;
 	
-protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
@@ -68,6 +59,14 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TEnumAsByte<EDifficulty> VehicleDifficulty = EDifficulty::Easy;
 
+	// Vehicle Speed
+	UPROPERTY()
+	float VehicleSpeed = 0.5f;
+
+	// Vehicle Turning Speed
+	UPROPERTY()
+	float VehicleTurningSpeed = 0.6f;
+	
 	// Current Enemy State
 	UPROPERTY(EditAnywhere)
 	EEnemyState CurrentState = EEnemyState::NormalDriving;
@@ -91,22 +90,23 @@ protected:
 	void TickRecover();							//Return to track after going off-course.
 	void TickCatchUp();							//When really far behind, speed up.
 
-	// Timers to keep track of acceleration
-	float MaxAccelerationTime = 0.01f;
-	float AccelerationTimer = MaxAccelerationTime;
-	float MaxRollTime = 0.5f;
-	float RollTimer = MaxRollTime;
-	UPROPERTY(VisibleAnywhere)
-	bool bIsAccelerating = true;
-
-	// Handle rotation
-	float RotationInterpSpeed = 1.0f;
-	bool bIsRotating = false;
-	double RotationTolerance = 10.0f;
-	float RotationSpeed = 200.0f;
+	// Returns the direction towards the objective from ForwardVector
+	FVector CalculateDirection();
+	
+	// Returns TRUE if vehicle needs to turn RIGHT to get to current objective
+	// Returns FALSE if vehicle needs to turn LEFT to get to current objective
+	void TurnTowardsDirection();
 	
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-		
+
+	// An in-order list of checkpoints that the EnemyVehicle needs to pass
+	UPROPERTY(VisibleAnywhere)
+	TArray<ACheckpoint*> VehicleCheckpoints;
+
+	// Position of where the enemy is currently trying to get to
+	// Changes based on current state and is not necessarily the next checkpoint
+	FVector CurrentObjective;
+	
 };
