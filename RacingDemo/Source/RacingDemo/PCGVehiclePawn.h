@@ -13,13 +13,29 @@ struct FVehicleStats
 	GENERATED_BODY()
 public:
 
+	// Acceleration is multiplied by the player's throttle inputs to provide different acceleration speeds
+	UPROPERTY(BlueprintReadOnly)
 	float Acceleration = 1.0f;
-	float MassScale = 1.0f;
-	float CentreOfMassOffset = 0;
-	float MaxFuel = 10.0f;
-	float TopSpeed = 100;
+
+	// ReverseAcceleration is multiplied by the player's reverse inputs to provide different reverse speeds
+	UPROPERTY(BlueprintReadOnly)
+	float ReverseAcceleration = 1.0f;
+	
+	// TopSpeed represents the Max RPM which us used in vehicle movement's physics
+	UPROPERTY(BlueprintReadOnly)
+	float TopSpeed = 7500;
+
+	// WeightDistribution offsets the centre of mass of the vehicle along the x-axis (forwards/backwards)
+	UPROPERTY(BlueprintReadOnly)
+	float WeightDistribution = 0;
+
+	// MaxFuel is the amount of distance that the vehicle can drive
+	UPROPERTY(BlueprintReadOnly)
+	float MaxFuelCapacity = 10.0f;
+
+	// TurningSpeed is multiplied by the player's steering inputs to provide different reverse speeds
+	UPROPERTY(BlueprintReadOnly)
 	float TurningSpeed = 1.0f;
-	float BreakingStrength = 1.0f;
 
 	/**
 	 * A debug ToString function that allows the easier printing of the vehicle stats.
@@ -29,12 +45,11 @@ public:
 	{
 		FString WeaponString = "";
 		WeaponString += "Acceleration: " + FString::SanitizeFloat(Acceleration) + "\n";
-		WeaponString += "MassScale: " + FString::SanitizeFloat(MassScale) + "\n";
-		WeaponString += "CentreOfMassOffset: " + FString::SanitizeFloat(CentreOfMassOffset) + "\n";
-		WeaponString += "MaxFuel: " + FString::SanitizeFloat(MaxFuel) + "\n";
+		WeaponString += "ReverseAcceleration: " + FString::SanitizeFloat(ReverseAcceleration)  + "\n";
 		WeaponString += "TopSpeed: " + FString::FromInt(TopSpeed) + "\n";
+		WeaponString += "WeightDistribution: " + FString::SanitizeFloat(WeightDistribution) + "\n";
+		WeaponString += "MaxFuelCapacity: " + FString::SanitizeFloat(MaxFuelCapacity) + "\n";
 		WeaponString += "TurningSpeed: " + FString::SanitizeFloat(TurningSpeed) + "\n";
-		WeaponString += "BreakingStrength: " + FString::SanitizeFloat(BreakingStrength)  + "\n";
 		return WeaponString;
 	}
 };
@@ -64,6 +79,16 @@ protected:
 	UPROPERTY()
 	UProceduralComponent* ProceduralComponent;
 	
+	// ChaosVehicleMovementComponent used for getting current speed of vehicle
+	UPROPERTY()
+	UChaosVehicleMovementComponent* MyVehicleMovementComponent;
+
+	// If vehicle is driving then decrease amount of fuel
+	void UpdateFuelAmount(float DeltaTime);
+
+	// Current fuel capacity, if out of fuel then cannot drive
+	float CurrentFuel = VehicleStats.MaxFuelCapacity;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -71,7 +96,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UFUNCTION(BlueprintImplementableEvent, Category = "VehiclePCG")
+	UFUNCTION(BlueprintImplementableEvent, Category = "PCG Vehicle Pawn")
 	void ApplyMaterials();
-	
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "PCG Vehicle Pawn")
+	void ApplyWeightDistribution();
+
 };

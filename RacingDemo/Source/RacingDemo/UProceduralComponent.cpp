@@ -27,29 +27,29 @@ void UProceduralComponent::GenerateRandomVehicle(EVehicleRarity& VehicleRarity, 
 	switch (VehicleRarity)
 	{
 	case EVehicleRarity::Legendary:
-		GoodStats = VehicleStatPicker(5, 7);
+		GoodStats = VehicleStatPicker(6, 6);
 		break;
 	case EVehicleRarity::Master:
-		GoodStats = VehicleStatPicker(4, 7);
+		GoodStats = VehicleStatPicker(5, 6);
 		break;
 	case EVehicleRarity::Rare:
-		GoodStats = VehicleStatPicker(3, 7);
+		GoodStats = VehicleStatPicker(3, 6);
 		break;
 	case EVehicleRarity::Common:
-		GoodStats = VehicleStatPicker(0, 7);
+		GoodStats = VehicleStatPicker(0, 6);
 		break;
 	default:
-		GoodStats = VehicleStatPicker(0, 7);
+		GoodStats = VehicleStatPicker(0, 6);
 		break;
 	}
 	
 	VehicleStats.Acceleration = GoodStats[0] ? FMath::RandRange(0.7f, 0.99f) : FMath::RandRange(0.3f, 0.69f);
-	VehicleStats.MassScale = GoodStats[0] ? FMath::RandRange(0.7f, 0.99f) : FMath::RandRange(1.0f, 1.0f);
-	VehicleStats.CentreOfMassOffset = GoodStats[1] ? FMath::RandRange(0.0f, 50.0f) : FMath::RandRange(50.0f, 100.0f);
-	VehicleStats.MaxFuel = GoodStats[2] ? FMath::RandRange(15.0f, 30.0f) : FMath::RandRange(5.0f, 14.99f);
-	VehicleStats.TopSpeed = GoodStats[3] ? FMath::RandRange(100, 300) : FMath::RandRange(50, 99);
-	VehicleStats.TurningSpeed = GoodStats[4] ? FMath::RandRange(0.8f, 0.99f) : FMath::RandRange(0.5f, 0.79f);
-	VehicleStats.BreakingStrength = GoodStats[5] ? FMath::RandRange(0.5f, 1.0f) : FMath::RandRange(0.1f, 0.5f);
+	VehicleStats.ReverseAcceleration = GoodStats[1] ? FMath::RandRange(0.5f, 1.0f) : FMath::RandRange(0.1f, 0.5f);
+	VehicleStats.TopSpeed = GoodStats[2] ? FMath::RandRange(3000, 5000) : FMath::RandRange(5000, 8000);
+	VehicleStats.WeightDistribution = GoodStats[3] ? FMath::RandRange(0.0f, 50.0f) : FMath::RandRange(-100.0f, -150.0f);
+	VehicleStats.MaxFuelCapacity = GoodStats[4] ? FMath::RandRange(15.0f, 30.0f) : FMath::RandRange(5.0f, 14.99f);
+	VehicleStats.TurningSpeed = GoodStats[5] ? FMath::RandRange(0.8f, 0.99f) : FMath::RandRange(0.5f, 0.79f);
+	
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *VehicleStats.ToString())
 	
 }
@@ -109,8 +109,7 @@ TArray<bool> UProceduralComponent::VehicleStatPicker(int32 NumOfGood, int32 NumO
 void UProceduralComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	
 }
 
 
