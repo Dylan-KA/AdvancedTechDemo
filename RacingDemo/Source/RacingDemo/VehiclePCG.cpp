@@ -2,7 +2,6 @@
 
 
 #include "VehiclePCG.h"
-
 #include "RacingGameInstance.h"
 
 // Sets default values for this component's properties
@@ -12,7 +11,7 @@ UVehiclePCG::UVehiclePCG()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+
 }
 
 
@@ -21,17 +20,39 @@ void UVehiclePCG::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GetVehicleClass();
+
+	// Populates VehicleStatsManager
+	VehicleBP->GetDefaultSubobjects(OutDefaultSubobjects);
+	for (UObject* Object : OutDefaultSubobjects)
+	{
+		if (UVehicleStatsManager* CastTest = Cast<UVehicleStatsManager>(Object))
+		{
+			VehicleStatsManager = CastTest;
+		}
+		if (UVehicleStatsManager* CastTest = Cast<UVehicleStatsManager>(Object))
+		{
+			VehicleStatsManager = CastTest;
+		}
+	}
+	if (VehicleStatsManager == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Could not find UVehicleStatsManager component"))
+	}
+
+	/*
 	GenerateRandomVehicle();
-	UE_LOG(LogTemp, Warning, TEXT("Vehicle Rarity: %d"), (int32)VehicleRarity)
-	UE_LOG(LogTemp, Warning, TEXT("Vehicle Stats: %s"), *VehicleStats.ToString())
 	
+	UE_LOG(LogTemp, Warning, TEXT("Vehicle Rarity: %d"), (int32)VehicleStatsManager->VehicleRarity)
+	UE_LOG(LogTemp, Warning, TEXT("Vehicle Stats: %s"), *VehicleStatsManager->VehicleStats.ToString())
+	*/
 }
 
 void UVehiclePCG::GenerateRandomVehicle()
 {
-	VehicleRarity = VehicleRarityPicker();
+	VehicleStatsManager->VehicleRarity = VehicleRarityPicker();
 	TArray<bool> GoodStats;
-	switch (VehicleRarity)
+	switch (VehicleStatsManager->VehicleRarity)
 	{
 	case EVehicleRarity::Legendary:
 		GoodStats = VehicleStatPicker(5, 6);
@@ -47,12 +68,12 @@ void UVehiclePCG::GenerateRandomVehicle()
 		break;
 	}
 
-	VehicleStats.MassScale = GoodStats[0] ? FMath::RandRange(0.8f, 1.0f) : FMath::RandRange(1.0f, 5.0f);
-	//VehicleStats.CentreOfMass = GoodStats[1] ? FMath::RandRange(0.05f, 0.2f) : FMath::RandRange(0.2f, 1.0f);
-	VehicleStats.Fuel = GoodStats[2] ? FMath::RandRange(15.0f, 30.0f) : FMath::RandRange(5.0f, 15.0f);
-	VehicleStats.TopSpeed = GoodStats[3] ? FMath::RandRange(100, 300) : FMath::RandRange(50, 100);
-	VehicleStats.TurningSpeed = GoodStats[4] ? 1.0f : FMath::RandRange(0.5f, 1.0f);
-	
+	VehicleStatsManager->VehicleStats.MassScale = GoodStats[0] ? FMath::RandRange(0.8f, 0.99f) : FMath::RandRange(1.0f, 5.0f);
+	//VehicleStatsManager->VehicleStats.CentreOfMass = GoodStats[1] ? FMath::RandRange(0.05f, 0.2f) : FMath::RandRange(0.2f, 1.0f);
+	VehicleStatsManager->VehicleStats.Fuel = GoodStats[2] ? FMath::RandRange(15.0f, 30.0f) : FMath::RandRange(5.0f, 14.99f);
+	VehicleStatsManager->VehicleStats.TopSpeed = GoodStats[3] ? FMath::RandRange(100, 300) : FMath::RandRange(50, 99);
+	VehicleStatsManager->VehicleStats.TurningSpeed = GoodStats[4] ? FMath::RandRange(0.8f, 0.99f) : FMath::RandRange(0.5f, 0.79f);
+	VehicleStatsManager->VehicleStats.BreakingStrength = GoodStats[5] ? FMath::RandRange(0.8f, 1.0f) : FMath::RandRange(0.3f, 0.79f);
 }
 
 EVehicleRarity UVehiclePCG::VehicleRarityPicker()
@@ -112,9 +133,12 @@ void UVehiclePCG::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	// ...
 }
 
-void UVehiclePCG::GetVehicleBP()
+void UVehiclePCG::GetVehicleClass()
 {
-	VehicleBP = GetWorld()->GetGameInstance<URacingGameInstance>()->GetVehicleClass();
+	if (const URacingGameInstance* GameInstance = GetWorld()->GetGameInstance<URacingGameInstance>())
+	{
+		VehicleBP = GameInstance->GetVehicleClass();
+	}
 }
 
 

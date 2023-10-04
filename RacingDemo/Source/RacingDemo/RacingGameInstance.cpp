@@ -4,7 +4,7 @@
 
  UClass* URacingGameInstance::GetVehicleClass() const
 {
- return VehicleClass.Get();
+  return VehicleClass.Get();
 }
 
 
