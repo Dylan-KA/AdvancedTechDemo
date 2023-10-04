@@ -22,11 +22,12 @@ void UVehiclePCG::BeginPlay()
 
 	GetVehicleClass();
 	PopulateVehicleStatsManager();
-	GenerateRandomVehicle();
+	//GenerateRandomVehicle();
 }
 
 void UVehiclePCG::GenerateRandomVehicle()
 {
+	UE_LOG(LogTemp, Warning, TEXT("CALLED GenerateRandomVehicle()"))
 	VehicleStatsManager->VehicleRarity = VehicleRarityPicker();
 	UE_LOG(LogTemp, Warning, TEXT("Rarity: %d"), VehicleStatsManager->VehicleRarity)
 	TArray<bool> GoodStats;
@@ -53,22 +54,22 @@ void UVehiclePCG::GenerateRandomVehicle()
 		UE_LOG(LogTemp, Warning, TEXT("DEFAULT"))
 		break;
 	}
-
-	VehicleStatsManager->MassScale = GoodStats[0] ? FMath::RandRange(0.8f, 0.99f) : FMath::RandRange(1.0f, 5.0f);
+	/*
+	VehicleStatsManager->Acceleration = GoodStats[0] ? FMath::RandRange(0.7f, 0.99f) : FMath::RandRange(0.3f, 0.69f);
 	VehicleStatsManager->CentreOfMassOffset = GoodStats[1] ? FMath::RandRange(0.0f, 50.0f) : FMath::RandRange(50.0f, 100.0f);
 	VehicleStatsManager->MaxFuel = GoodStats[2] ? FMath::RandRange(15.0f, 30.0f) : FMath::RandRange(5.0f, 14.99f);
 	VehicleStatsManager->TopSpeed = GoodStats[3] ? FMath::RandRange(100, 300) : FMath::RandRange(50, 99);
 	VehicleStatsManager->TurningSpeed = GoodStats[4] ? FMath::RandRange(0.8f, 0.99f) : FMath::RandRange(0.5f, 0.79f);
-	VehicleStatsManager->BreakingStrength = GoodStats[5] ? FMath::RandRange(0.8f, 1.0f) : FMath::RandRange(0.3f, 0.79f);
-	FString WeaponString = "";
-	WeaponString += "MassScale:      " + FString::SanitizeFloat(VehicleStatsManager->MassScale) + "\n";
+	VehicleStatsManager->BreakingStrength = GoodStats[5] ? FMath::RandRange(0.5f, 1.0f) : FMath::RandRange(0.1f, 0.5f);
+	FString WeaponString = "IN PCG ";
+	WeaponString += "Acceleration:      " + FString::SanitizeFloat(VehicleStatsManager->Acceleration) + "\n";
 	WeaponString += "CentreOfMassOffset:     " + FString::SanitizeFloat(VehicleStatsManager->CentreOfMassOffset) + "\n";
 	WeaponString += "MaxFuel:   " + FString::SanitizeFloat(VehicleStatsManager->MaxFuel) + "\n";
 	WeaponString += "TopSpeed: " + FString::FromInt(VehicleStatsManager->TopSpeed) + "\n";
 	WeaponString += "TurningSpeed:   " + FString::SanitizeFloat(VehicleStatsManager->TurningSpeed) + "\n";
 	WeaponString += "BreakingStrength:   " + FString::SanitizeFloat(VehicleStatsManager->BreakingStrength)  + "\n";
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *WeaponString)
-
+	*/
 }
 
 EVehicleRarity UVehiclePCG::VehicleRarityPicker()
@@ -78,6 +79,7 @@ EVehicleRarity UVehiclePCG::VehicleRarityPicker()
 	// 30% chance of Rare
 	// 15% chance of Master
 	// 5% chance of Legendary
+	UE_LOG(LogTemp, Warning, TEXT("CALLED VehicleRarityPicker()"))
 	const float RandPercent = FMath::RandRange(0.0f, 1.0f);
 	
 	if (RandPercent <= 0.5f)
@@ -99,6 +101,7 @@ EVehicleRarity UVehiclePCG::VehicleRarityPicker()
 TArray<bool> UVehiclePCG::VehicleStatPicker(int32 NumOfGood, int32 NumOfStats)
 {
 	// Fill the array with the correct number of good and bad stats.
+	UE_LOG(LogTemp, Warning, TEXT("CALLED VehicleStatPicker()"))
 	TArray<bool> GoodStats;
 	for (int32 i = 0; i < NumOfStats; i++)
 	{
@@ -151,6 +154,14 @@ void UVehiclePCG::PopulateVehicleStatsManager()
 				{
 					VehicleStatsManager = itemComponent;
 					UE_LOG(LogTemp, Warning, TEXT("SUCCESS found VehicleStatsManager"), )
+					FString WeaponString = "";
+					WeaponString += "Acceleration: " + FString::SanitizeFloat(VehicleStatsManager->Acceleration) + "\n";
+					WeaponString += "CentreOfMassOffset: " + FString::SanitizeFloat(VehicleStatsManager->CentreOfMassOffset) + "\n";
+					WeaponString += "MaxFuel: " + FString::SanitizeFloat(VehicleStatsManager->MaxFuel) + "\n";
+					WeaponString += "TopSpeed: " + FString::FromInt(VehicleStatsManager->TopSpeed) + "\n";
+					WeaponString += "TurningSpeed: " + FString::SanitizeFloat(VehicleStatsManager->TurningSpeed) + "\n";
+					WeaponString += "BreakingStrength: " + FString::SanitizeFloat(VehicleStatsManager->BreakingStrength)  + "\n";
+					UE_LOG(LogTemp, Warning, TEXT("%s"), *WeaponString)
 				}
 			}
 		}

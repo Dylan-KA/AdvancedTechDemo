@@ -19,8 +19,8 @@ void UVehicleStatsManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ApplyMassScale();
-	ApplyCentreOfMass();
+	//ApplyMassScale();
+	//ApplyCentreOfMass();
 	
 }
 
@@ -42,7 +42,6 @@ void UVehicleStatsManager::ApplyCentreOfMass()
 void UVehicleStatsManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
+	
 }
 

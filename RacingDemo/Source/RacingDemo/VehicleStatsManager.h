@@ -50,17 +50,21 @@ public:
 	EVehicleRarity VehicleRarity;
 
 	// Current stats of the vehicle
-	UPROPERTY(BlueprintReadOnly)
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	float Acceleration = 1.0f;
+	
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	float MassScale = 1.0f;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	float CentreOfMassOffset = 0;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	float MaxFuel = 10.0f;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	float TopSpeed = 100;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	float TurningSpeed = 1.0f;
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	float BreakingStrength = 1.0f;
 	
 };
