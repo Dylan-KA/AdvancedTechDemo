@@ -9,13 +9,16 @@ APCGVehiclePawn::APCGVehiclePawn()
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
+	ProceduralComponent = CreateDefaultSubobject<UProceduralComponent>("Procedural Component");
 }
 
 // Called when the game starts or when spawned
 void APCGVehiclePawn::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	ProceduralComponent->GenerateRandomVehicle(VehicleRarity, VehicleStats);
+	ApplyMaterials();
 }
 
 // Called every frame

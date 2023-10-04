@@ -4,52 +4,46 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "WheeledVehiclePawn.h"
-#include "VehicleStatsManager.h"
-#include "VehiclePCG.generated.h"
+#include "UProceduralComponent.generated.h"
+
+struct FVehicleStats;
+
+UENUM(BlueprintType)
+enum class EVehicleRarity : uint8
+{
+	Common = 0,
+	Rare = 1,
+	Master = 2,
+	Legendary = 3
+};
 
 /**
  * This Component is responsible for generating the rarity and stats of the vehicle and populating the corresponding member variables in the VehicleStatsManager
  */
 UCLASS( BlueprintType, Blueprintable )
-class RACINGDEMO_API UVehiclePCG : public UActorComponent
+class RACINGDEMO_API UProceduralComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UVehiclePCG();
+	UProceduralComponent();
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-	// Holds a pointer to the BP Vehicle class
-	TSubclassOf<AWheeledVehiclePawn> VehicleBP;
-	void GetVehicleClass(); // Populates VehicleBP
-
-	// Populates VehicleStatsManager
-	void PopulateVehicleStatsManager();
-
-	// Generates random vehicle stats
-	void GenerateRandomVehicle();
 
 	// Chooses a random Vehicle rarity with weighted chances
 	EVehicleRarity VehicleRarityPicker();
 	
 	// Chooses which Stats are good and which are bad
 	TArray<bool> VehicleStatPicker(int32 NumOfGood, int32 NumOfStats);
-
-	// Component which provides behaviour for stats during runtime
-	UPROPERTY()
-	UVehicleStatsManager* VehicleStatsManager;
 	
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	// Currently unable to add a Blueprint event
-	// Because this component is not in the inherited class of the BluePrint and is added manually
-	UFUNCTION(BlueprintImplementableEvent, Category = "VehiclePCG")
-	void ApplyMaterials();
+	// Generates random vehicle stats
+	void GenerateRandomVehicle(EVehicleRarity& VehicleRarity, FVehicleStats& VehicleStats);
+		
 };
