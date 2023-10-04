@@ -9,10 +9,10 @@
 UENUM(BlueprintType)
 enum class EVehicleRarity : uint8
 {
-	Common,
-	Rare,
-	Master,
-	Legendary
+	Common = 0,
+	Rare = 1,
+	Master = 2,
+	Legendary = 3
 };
 
 USTRUCT(BlueprintType)
@@ -22,8 +22,8 @@ struct FVehicleStats
 public:
 	
 	float MassScale = 1.0f;
-	FVector CentreOfMass = FVector(0,0,0);
-	float Fuel = 10.0f;
+	float CentreOfMassOffset = 0;
+	float MaxFuel = 10.0f;
 	float TopSpeed = 100;
 	float TurningSpeed = 1.0f;
 	float BreakingStrength = 1.0f;
@@ -36,8 +36,8 @@ public:
 	{
 		FString WeaponString = "";
 		WeaponString += "MassScale:      " + FString::SanitizeFloat(MassScale) + "\n";
-		WeaponString += "CentreOfMass:     " + CentreOfMass.ToString() + "\n";
-		WeaponString += "Fuel:   " + FString::SanitizeFloat(Fuel) + "\n";
+		WeaponString += "CentreOfMassOffset:     " + FString::SanitizeFloat(CentreOfMassOffset) + "\n";
+		WeaponString += "MaxFuel:   " + FString::SanitizeFloat(MaxFuel) + "\n";
 		WeaponString += "TopSpeed: " + FString::FromInt(TopSpeed) + "\n";
 		WeaponString += "TurningSpeed:   " + FString::SanitizeFloat(TurningSpeed) + "\n";
 		WeaponString += "BreakingStrength:   " + FString::SanitizeFloat(BreakingStrength)  + "\n";
@@ -61,14 +61,26 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	// Functions which apply their values to the mesh component (mesh component handles logic)
+	void ApplyMassScale();
+	void ApplyCentreOfMass();
+
+	// Functions which run in the tick function and are done manually (these funcitons handle logic manually)
+	void MaxTopSpeedManager();
+	void FuelManager();
+
+	// The remaining two values (TurningSpeed and BreakingStrength) are handles in the VehicleMovementComponent
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Current stats of the vehicle
+	UPROPERTY(BlueprintReadOnly)
 	FVehicleStats VehicleStats;
 
 	// Current rarity of the vehicle
 	UPROPERTY(BlueprintReadOnly)
-	EVehicleRarity VehicleRarity = EVehicleRarity::Common;
+	EVehicleRarity VehicleRarity;
+
 };

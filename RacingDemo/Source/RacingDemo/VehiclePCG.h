@@ -28,6 +28,9 @@ protected:
 	TSubclassOf<AWheeledVehiclePawn> VehicleBP;
 	void GetVehicleClass(); // Populates VehicleBP
 
+	// Populates VehicleStatsManager
+	void PopulateVehicleStatsManager();
+
 	// Generates random vehicle stats
 	void GenerateRandomVehicle();
 
@@ -40,11 +43,13 @@ protected:
 	// Component which provides behaviour for stats during runtime
 	UPROPERTY()
 	UVehicleStatsManager* VehicleStatsManager;
-
-	TArray<UObject*> OutDefaultSubobjects;
 	
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+
+	// Currently unable to add a Blueprint event
+	// Because this component is not in the inherited class of the BluePrint and is added manually
+	UFUNCTION(BlueprintImplementableEvent, Category = "VehiclePCG")
+	void ApplyMaterials();
 };

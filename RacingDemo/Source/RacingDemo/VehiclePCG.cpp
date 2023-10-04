@@ -3,6 +3,7 @@
 
 #include "VehiclePCG.h"
 #include "RacingGameInstance.h"
+#include "Engine/SCS_Node.h"
 
 // Sets default values for this component's properties
 UVehiclePCG::UVehiclePCG()
@@ -10,7 +11,6 @@ UVehiclePCG::UVehiclePCG()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
 
 }
 
@@ -21,59 +21,47 @@ void UVehiclePCG::BeginPlay()
 	Super::BeginPlay();
 
 	GetVehicleClass();
-
-	// Populates VehicleStatsManager
-	VehicleBP->GetDefaultSubobjects(OutDefaultSubobjects);
-	for (UObject* Object : OutDefaultSubobjects)
-	{
-		if (UVehicleStatsManager* CastTest = Cast<UVehicleStatsManager>(Object))
-		{
-			VehicleStatsManager = CastTest;
-		}
-		if (UVehicleStatsManager* CastTest = Cast<UVehicleStatsManager>(Object))
-		{
-			VehicleStatsManager = CastTest;
-		}
-	}
-	if (VehicleStatsManager == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Could not find UVehicleStatsManager component"))
-	}
-
-	/*
+	PopulateVehicleStatsManager();
 	GenerateRandomVehicle();
-	
-	UE_LOG(LogTemp, Warning, TEXT("Vehicle Rarity: %d"), (int32)VehicleStatsManager->VehicleRarity)
-	UE_LOG(LogTemp, Warning, TEXT("Vehicle Stats: %s"), *VehicleStatsManager->VehicleStats.ToString())
-	*/
 }
 
 void UVehiclePCG::GenerateRandomVehicle()
 {
 	VehicleStatsManager->VehicleRarity = VehicleRarityPicker();
+	UE_LOG(LogTemp, Warning, TEXT("Rarity: %d"), VehicleStatsManager->VehicleRarity)
 	TArray<bool> GoodStats;
 	switch (VehicleStatsManager->VehicleRarity)
 	{
 	case EVehicleRarity::Legendary:
 		GoodStats = VehicleStatPicker(5, 6);
+		UE_LOG(LogTemp, Warning, TEXT("Legendary"))
 		break;
 	case EVehicleRarity::Master:
 		GoodStats = VehicleStatPicker(4, 6);
+		UE_LOG(LogTemp, Warning, TEXT("Master"))
 		break;
 	case EVehicleRarity::Rare:
 		GoodStats = VehicleStatPicker(3, 6);
+		UE_LOG(LogTemp, Warning, TEXT("Rare"))
+		break;
+	case EVehicleRarity::Common:
+		GoodStats = VehicleStatPicker(0, 6);
+		UE_LOG(LogTemp, Warning, TEXT("Common"))
 		break;
 	default:
 		GoodStats = VehicleStatPicker(0, 6);
+		UE_LOG(LogTemp, Warning, TEXT("DEFAULT"))
 		break;
 	}
 
 	VehicleStatsManager->VehicleStats.MassScale = GoodStats[0] ? FMath::RandRange(0.8f, 0.99f) : FMath::RandRange(1.0f, 5.0f);
-	//VehicleStatsManager->VehicleStats.CentreOfMass = GoodStats[1] ? FMath::RandRange(0.05f, 0.2f) : FMath::RandRange(0.2f, 1.0f);
-	VehicleStatsManager->VehicleStats.Fuel = GoodStats[2] ? FMath::RandRange(15.0f, 30.0f) : FMath::RandRange(5.0f, 14.99f);
+	VehicleStatsManager->VehicleStats.CentreOfMassOffset = GoodStats[1] ? FMath::RandRange(0.0f, 10.0f) : FMath::RandRange(10.0f, 50.0f);
+	VehicleStatsManager->VehicleStats.MaxFuel = GoodStats[2] ? FMath::RandRange(15.0f, 30.0f) : FMath::RandRange(5.0f, 14.99f);
 	VehicleStatsManager->VehicleStats.TopSpeed = GoodStats[3] ? FMath::RandRange(100, 300) : FMath::RandRange(50, 99);
 	VehicleStatsManager->VehicleStats.TurningSpeed = GoodStats[4] ? FMath::RandRange(0.8f, 0.99f) : FMath::RandRange(0.5f, 0.79f);
 	VehicleStatsManager->VehicleStats.BreakingStrength = GoodStats[5] ? FMath::RandRange(0.8f, 1.0f) : FMath::RandRange(0.3f, 0.79f);
+	UE_LOG(LogTemp, Warning, TEXT("Vehicle Stats: %s"), *VehicleStatsManager->VehicleStats.ToString())
+
 }
 
 EVehicleRarity UVehiclePCG::VehicleRarityPicker()
@@ -138,6 +126,31 @@ void UVehiclePCG::GetVehicleClass()
 	if (const URacingGameInstance* GameInstance = GetWorld()->GetGameInstance<URacingGameInstance>())
 	{
 		VehicleBP = GameInstance->GetVehicleClass();
+	}
+}
+
+void UVehiclePCG::PopulateVehicleStatsManager()
+{
+	auto blueprint = UBlueprint::GetBlueprintFromClass(VehicleBP);
+
+	if (blueprint && blueprint->SimpleConstructionScript)
+	{
+		const TArray<USCS_Node*>& scsnodes = blueprint->SimpleConstructionScript->GetAllNodes();
+		for (auto scsnode : scsnodes)
+		{
+			if (scsnode)
+			{
+				if (auto itemComponent = Cast<UVehicleStatsManager>(scsnode->ComponentTemplate))
+				{
+					VehicleStatsManager = itemComponent;
+					UE_LOG(LogTemp, Warning, TEXT("SUCCESS found VehicleStatsManager"), )
+				}
+			}
+		}
+	}
+	if (VehicleStatsManager == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Could not find UVehicleStatsManager component"))
 	}
 }
 

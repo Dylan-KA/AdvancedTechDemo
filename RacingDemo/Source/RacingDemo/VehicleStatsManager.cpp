@@ -19,8 +19,23 @@ void UVehicleStatsManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	ApplyMassScale();
+	ApplyCentreOfMass();
 	
+}
+
+void UVehicleStatsManager::ApplyMassScale()
+{
+	GetOwner()->FindComponentByClass<UStaticMeshComponent>()->BodyInstance.SetMassScale(VehicleStats.MassScale);
+	UE_LOG(LogTemp, Warning, TEXT("GetBodyMass: %f"), GetOwner()->FindComponentByClass<UStaticMeshComponent>()->BodyInstance.GetBodyMass())
+}
+
+void UVehicleStatsManager::ApplyCentreOfMass()
+{
+	FVector NewCentreOfMass = FVector(0,0,0);
+	NewCentreOfMass.X = VehicleStats.CentreOfMassOffset;
+	GetOwner()->FindComponentByClass<UStaticMeshComponent>()->SetCenterOfMass(NewCentreOfMass);
+	UE_LOG(LogTemp, Warning, TEXT("GetCentreOfMass: %f"), GetOwner()->FindComponentByClass<UStaticMeshComponent>()->GetCenterOfMass())
 }
 
 
