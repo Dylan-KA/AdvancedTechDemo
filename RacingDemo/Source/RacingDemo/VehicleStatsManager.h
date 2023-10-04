@@ -15,36 +15,6 @@ enum class EVehicleRarity : uint8
 	Legendary = 3
 };
 
-USTRUCT(BlueprintType)
-struct FVehicleStats
-{
-	GENERATED_BODY()
-public:
-	
-	float MassScale = 1.0f;
-	float CentreOfMassOffset = 0;
-	float MaxFuel = 10.0f;
-	float TopSpeed = 100;
-	float TurningSpeed = 1.0f;
-	float BreakingStrength = 1.0f;
-
-	/**
-	 * A debug ToString function that allows the easier printing of the vehicle stats.
-	 * @return A string detailing the vehicle stats stored in this struct.
-	 */
-	FString ToString() const
-	{
-		FString WeaponString = "";
-		WeaponString += "MassScale:      " + FString::SanitizeFloat(MassScale) + "\n";
-		WeaponString += "CentreOfMassOffset:     " + FString::SanitizeFloat(CentreOfMassOffset) + "\n";
-		WeaponString += "MaxFuel:   " + FString::SanitizeFloat(MaxFuel) + "\n";
-		WeaponString += "TopSpeed: " + FString::FromInt(TopSpeed) + "\n";
-		WeaponString += "TurningSpeed:   " + FString::SanitizeFloat(TurningSpeed) + "\n";
-		WeaponString += "BreakingStrength:   " + FString::SanitizeFloat(BreakingStrength)  + "\n";
-		return WeaponString;
-	}
-};
-
 /**
  * This Component is responsible for storing the rarity and stats of the vehicle and managing vehicle behaviour during runtime.
  */
@@ -74,13 +44,23 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	// Current stats of the vehicle
-	UPROPERTY(BlueprintReadOnly)
-	FVehicleStats VehicleStats;
-
+	
 	// Current rarity of the vehicle
 	UPROPERTY(BlueprintReadOnly)
 	EVehicleRarity VehicleRarity;
 
+	// Current stats of the vehicle
+	UPROPERTY(BlueprintReadOnly)
+	float MassScale = 1.0f;
+	UPROPERTY(BlueprintReadOnly)
+	float CentreOfMassOffset = 0;
+	UPROPERTY(BlueprintReadOnly)
+	float MaxFuel = 10.0f;
+	UPROPERTY(BlueprintReadOnly)
+	float TopSpeed = 100;
+	UPROPERTY(BlueprintReadOnly)
+	float TurningSpeed = 1.0f;
+	UPROPERTY(BlueprintReadOnly)
+	float BreakingStrength = 1.0f;
+	
 };

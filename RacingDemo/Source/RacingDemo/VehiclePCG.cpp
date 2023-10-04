@@ -54,13 +54,20 @@ void UVehiclePCG::GenerateRandomVehicle()
 		break;
 	}
 
-	VehicleStatsManager->VehicleStats.MassScale = GoodStats[0] ? FMath::RandRange(0.8f, 0.99f) : FMath::RandRange(1.0f, 5.0f);
-	VehicleStatsManager->VehicleStats.CentreOfMassOffset = GoodStats[1] ? FMath::RandRange(0.0f, 10.0f) : FMath::RandRange(10.0f, 50.0f);
-	VehicleStatsManager->VehicleStats.MaxFuel = GoodStats[2] ? FMath::RandRange(15.0f, 30.0f) : FMath::RandRange(5.0f, 14.99f);
-	VehicleStatsManager->VehicleStats.TopSpeed = GoodStats[3] ? FMath::RandRange(100, 300) : FMath::RandRange(50, 99);
-	VehicleStatsManager->VehicleStats.TurningSpeed = GoodStats[4] ? FMath::RandRange(0.8f, 0.99f) : FMath::RandRange(0.5f, 0.79f);
-	VehicleStatsManager->VehicleStats.BreakingStrength = GoodStats[5] ? FMath::RandRange(0.8f, 1.0f) : FMath::RandRange(0.3f, 0.79f);
-	UE_LOG(LogTemp, Warning, TEXT("Vehicle Stats: %s"), *VehicleStatsManager->VehicleStats.ToString())
+	VehicleStatsManager->MassScale = GoodStats[0] ? FMath::RandRange(0.8f, 0.99f) : FMath::RandRange(1.0f, 5.0f);
+	VehicleStatsManager->CentreOfMassOffset = GoodStats[1] ? FMath::RandRange(0.0f, 50.0f) : FMath::RandRange(50.0f, 100.0f);
+	VehicleStatsManager->MaxFuel = GoodStats[2] ? FMath::RandRange(15.0f, 30.0f) : FMath::RandRange(5.0f, 14.99f);
+	VehicleStatsManager->TopSpeed = GoodStats[3] ? FMath::RandRange(100, 300) : FMath::RandRange(50, 99);
+	VehicleStatsManager->TurningSpeed = GoodStats[4] ? FMath::RandRange(0.8f, 0.99f) : FMath::RandRange(0.5f, 0.79f);
+	VehicleStatsManager->BreakingStrength = GoodStats[5] ? FMath::RandRange(0.8f, 1.0f) : FMath::RandRange(0.3f, 0.79f);
+	FString WeaponString = "";
+	WeaponString += "MassScale:      " + FString::SanitizeFloat(VehicleStatsManager->MassScale) + "\n";
+	WeaponString += "CentreOfMassOffset:     " + FString::SanitizeFloat(VehicleStatsManager->CentreOfMassOffset) + "\n";
+	WeaponString += "MaxFuel:   " + FString::SanitizeFloat(VehicleStatsManager->MaxFuel) + "\n";
+	WeaponString += "TopSpeed: " + FString::FromInt(VehicleStatsManager->TopSpeed) + "\n";
+	WeaponString += "TurningSpeed:   " + FString::SanitizeFloat(VehicleStatsManager->TurningSpeed) + "\n";
+	WeaponString += "BreakingStrength:   " + FString::SanitizeFloat(VehicleStatsManager->BreakingStrength)  + "\n";
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *WeaponString)
 
 }
 
