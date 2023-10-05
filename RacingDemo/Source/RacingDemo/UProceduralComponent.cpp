@@ -22,31 +22,35 @@ void UProceduralComponent::BeginPlay()
 void UProceduralComponent::GenerateRandomVehicle(EVehicleRarity& VehicleRarity, FVehicleStats& VehicleStats)
 {
 	VehicleRarity = VehicleRarityPicker();
-	UE_LOG(LogTemp, Warning, TEXT("Rarity: %d"), VehicleRarity)
 	TArray<bool> GoodStats;
 	switch (VehicleRarity)
 	{
 	case EVehicleRarity::Legendary:
 		GoodStats = VehicleStatPicker(6, 6);
+		UE_LOG(LogTemp, Warning, TEXT("Rarity: Legendary"))
 		break;
 	case EVehicleRarity::Master:
 		GoodStats = VehicleStatPicker(5, 6);
+		UE_LOG(LogTemp, Warning, TEXT("Rarity: Master"))
 		break;
 	case EVehicleRarity::Rare:
-		GoodStats = VehicleStatPicker(3, 6);
+		GoodStats = VehicleStatPicker(4, 6);
+		UE_LOG(LogTemp, Warning, TEXT("Rarity: Rare"))
 		break;
 	case EVehicleRarity::Common:
-		GoodStats = VehicleStatPicker(0, 6);
+		GoodStats = VehicleStatPicker(2, 6);
+		UE_LOG(LogTemp, Warning, TEXT("Rarity: Common"))
 		break;
 	default:
-		GoodStats = VehicleStatPicker(0, 6);
+		GoodStats = VehicleStatPicker(2, 6);
+		UE_LOG(LogTemp, Warning, TEXT("Rarity: Default"))
 		break;
 	}
 	
-	VehicleStats.Acceleration = GoodStats[0] ? FMath::RandRange(0.7f, 0.99f) : FMath::RandRange(0.3f, 0.69f);
-	VehicleStats.ReverseAcceleration = GoodStats[1] ? FMath::RandRange(0.5f, 1.0f) : FMath::RandRange(0.1f, 0.5f);
+	VehicleStats.Acceleration = GoodStats[0] ? FMath::RandRange(0.8f, 1.0f) : FMath::RandRange(0.3f, 0.79f);
+	VehicleStats.ReverseAcceleration = GoodStats[1] ? FMath::RandRange(0.8f, 1.0f) : FMath::RandRange(0.3f, 0.79f);
 	VehicleStats.TopSpeed = GoodStats[2] ? FMath::RandRange(3000, 5000) : FMath::RandRange(5000, 8000);
-	VehicleStats.WeightDistribution = GoodStats[3] ? FMath::RandRange(0.0f, 50.0f) : FMath::RandRange(-100.0f, -150.0f);
+	VehicleStats.WeightDistribution = GoodStats[3] ? FMath::RandRange(0.0f, 50.0f) : FMath::RandRange(-50.0f, -150.0f);
 	VehicleStats.MaxFuelCapacity = GoodStats[4] ? FMath::RandRange(15.0f, 30.0f) : FMath::RandRange(5.0f, 14.99f);
 	VehicleStats.TurningSpeed = GoodStats[5] ? FMath::RandRange(0.8f, 0.99f) : FMath::RandRange(0.5f, 0.79f);
 	

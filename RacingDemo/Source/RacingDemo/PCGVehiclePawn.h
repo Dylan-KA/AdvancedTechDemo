@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "WheeledVehiclePawn.h"
 #include "UProceduralComponent.h"
+#include "Components/PointLightComponent.h"
 #include "PCGVehiclePawn.generated.h"
 
 USTRUCT(BlueprintType)
@@ -43,12 +44,12 @@ public:
 	 */
 	FString ToString() const
 	{
-		FString WeaponString = "";
+		FString WeaponString = "\n";
 		WeaponString += "Acceleration: " + FString::SanitizeFloat(Acceleration) + "\n";
 		WeaponString += "ReverseAcceleration: " + FString::SanitizeFloat(ReverseAcceleration)  + "\n";
-		WeaponString += "TopSpeed: " + FString::FromInt(TopSpeed) + "\n";
-		WeaponString += "WeightDistribution: " + FString::SanitizeFloat(WeightDistribution) + "\n";
-		WeaponString += "MaxFuelCapacity: " + FString::SanitizeFloat(MaxFuelCapacity) + "\n";
+		WeaponString += "TopSpeed (Max RPM): " + FString::FromInt(TopSpeed) + "\n";
+		WeaponString += "WeightDistribution (Positive to Front / Negative to Rear): " + FString::SanitizeFloat(WeightDistribution) + "\n";
+		WeaponString += "MaxFuelCapacity (Litres): " + FString::SanitizeFloat(MaxFuelCapacity) + "\n";
 		WeaponString += "TurningSpeed: " + FString::SanitizeFloat(TurningSpeed) + "\n";
 		return WeaponString;
 	}
@@ -88,6 +89,23 @@ protected:
 
 	// Current fuel capacity, if out of fuel then cannot drive
 	float CurrentFuel = VehicleStats.MaxFuelCapacity;
+	bool bIsOutOfFuel = false;
+	
+	// Under-glow light components
+	UPROPERTY(VisibleDefaultsOnly)
+	UPointLightComponent* FrontLightComponent;
+	UPROPERTY(VisibleDefaultsOnly)
+	UPointLightComponent* BackLightComponent;
+	UPROPERTY(VisibleDefaultsOnly)
+	UPointLightComponent* LeftLightComponent;
+	UPROPERTY(VisibleDefaultsOnly)
+	UPointLightComponent* RightLightComponent;
+
+	// Initalises, attaches, ands sets the position and intensity of all light components
+	void SetupLightComponents();
+	
+	// Set the colour of the light underneath the car
+	void SetUnderGlowColour();
 	
 public:	
 	// Called every frame
