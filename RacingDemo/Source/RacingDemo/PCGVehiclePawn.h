@@ -90,6 +90,15 @@ protected:
 	// Current fuel capacity, if out of fuel then cannot drive
 	float CurrentFuel = VehicleStats.MaxFuelCapacity;
 	bool bIsOutOfFuel = false;
+
+	// Procedural Vehicle Material
+	UPROPERTY(VisibleAnywhere)
+	UMaterialInterface* ProceduralMaterial;
+
+	// Generates and applies a procedural material
+	// Colour is set to the rarity of the car
+	// other values are randomly chosen (roughness, metallic, specular)
+	void GenerateProceduralMaterial();
 	
 	// Under-glow light components
 	UPROPERTY(VisibleDefaultsOnly)
@@ -100,7 +109,7 @@ protected:
 	UPointLightComponent* LeftLightComponent;
 	UPROPERTY(VisibleDefaultsOnly)
 	UPointLightComponent* RightLightComponent;
-
+	
 	// Initalises, attaches, ands sets the position and intensity of all light components
 	void SetupLightComponents();
 	
@@ -113,9 +122,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UFUNCTION(BlueprintImplementableEvent, Category = "PCG Vehicle Pawn")
-	void ApplyMaterials();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "PCG Vehicle Pawn")
 	void ApplyWeightDistribution();

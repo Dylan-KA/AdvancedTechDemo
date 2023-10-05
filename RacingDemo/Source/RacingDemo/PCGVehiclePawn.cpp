@@ -21,7 +21,8 @@ void APCGVehiclePawn::BeginPlay()
 
 	ProceduralComponent->GenerateRandomVehicle(VehicleRarity, VehicleStats);
 	ApplyWeightDistribution();
-	ApplyMaterials();
+	GenerateProceduralMaterial();
+	//ApplyMaterials();
 	SetUnderGlowColour();
 	CurrentFuel = VehicleStats.MaxFuelCapacity;
 }
@@ -32,6 +33,38 @@ void APCGVehiclePawn::UpdateFuelAmount(float DeltaTime)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("CurrentFuel: %f"), CurrentFuel)
 		CurrentFuel -= DeltaTime/10;
+	}
+}
+
+void APCGVehiclePawn::GenerateProceduralMaterial()
+{
+	// Get the material for the chassis
+	ProceduralMaterial = GetMesh()->GetMaterial(2);
+	// Make a dynamic material instance from the material above
+	UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(ProceduralMaterial, this);
+	// Set the chassis material to this Dynamic material
+	GetMesh()->SetMaterial(2, DynamicMaterial);
+	// Randomise parameters
+	DynamicMaterial->SetScalarParameterValue(TEXT("Roughness"),  FMath::RandRange(0.0f, 1.0f));
+	DynamicMaterial->SetScalarParameterValue(TEXT("Metallic"), FMath::RandRange(0.0f, 1.0f));
+	DynamicMaterial->SetScalarParameterValue(TEXT("Specular"), FMath::RandRange(0.0f, 1.0f));
+	// Set Colour based on rarity
+	switch (VehicleRarity)
+	{
+	case EVehicleRarity::Legendary:
+		DynamicMaterial->SetVectorParameterValue(TEXT("Base Color"), FColor::Yellow);
+		break;
+	case EVehicleRarity::Master:
+		DynamicMaterial->SetVectorParameterValue(TEXT("Base Color"), FColor(255, 0, 150));
+		break;
+	case EVehicleRarity::Rare:
+		DynamicMaterial->SetVectorParameterValue(TEXT("Base Color"), FColor::Blue);
+		break;
+	case EVehicleRarity::Common:
+		DynamicMaterial->SetVectorParameterValue(TEXT("Base Color"), FColor::White);
+		break;
+	default:
+		break;
 	}
 }
 
@@ -73,10 +106,10 @@ void APCGVehiclePawn::SetUnderGlowColour()
 		RightLightComponent->SetLightColor(FColor::Yellow);
 		break;
 	case EVehicleRarity::Master:
-		FrontLightComponent->SetLightColor(FColor::Red);
-		BackLightComponent->SetLightColor(FColor::Red);
-		LeftLightComponent->SetLightColor(FColor::Red);
-		RightLightComponent->SetLightColor(FColor::Red);
+		FrontLightComponent->SetLightColor(FColor(255, 0, 150));
+		BackLightComponent->SetLightColor(FColor(255, 0, 150));
+		LeftLightComponent->SetLightColor(FColor(255, 0, 150));
+		RightLightComponent->SetLightColor(FColor(255, 0, 150));
 		break;
 	case EVehicleRarity::Rare:
 		FrontLightComponent->SetLightColor(FColor::Blue);
