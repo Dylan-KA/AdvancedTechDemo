@@ -49,7 +49,7 @@ void UProceduralComponent::GenerateRandomVehicle(EVehicleRarity& VehicleRarity, 
 	
 	VehicleStats.Acceleration = GoodStats[0] ? FMath::RandRange(0.8f, 1.0f) : FMath::RandRange(0.3f, 0.79f);
 	VehicleStats.ReverseAcceleration = GoodStats[1] ? FMath::RandRange(0.8f, 1.0f) : FMath::RandRange(0.3f, 0.79f);
-	VehicleStats.TopSpeed = GoodStats[2] ? FMath::RandRange(3000, 5000) : FMath::RandRange(5000, 8000);
+	VehicleStats.TopSpeed = GoodStats[2] ? FMath::RandRange(2000, 5000) : FMath::RandRange(5000, 8000);
 	VehicleStats.WeightDistribution = GoodStats[3] ? FMath::RandRange(0.0f, 50.0f) : FMath::RandRange(-50.0f, -150.0f);
 	VehicleStats.MaxFuelCapacity = GoodStats[4] ? FMath::RandRange(15.0f, 30.0f) : FMath::RandRange(5.0f, 14.99f);
 	VehicleStats.TurningSpeed = GoodStats[5] ? FMath::RandRange(0.8f, 0.99f) : FMath::RandRange(0.5f, 0.79f);

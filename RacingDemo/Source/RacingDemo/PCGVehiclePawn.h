@@ -103,18 +103,21 @@ protected:
 	// Under-glow light components
 	UPROPERTY(VisibleDefaultsOnly)
 	UPointLightComponent* FrontLightComponent;
+	
 	UPROPERTY(VisibleDefaultsOnly)
 	UPointLightComponent* BackLightComponent;
+	
 	UPROPERTY(VisibleDefaultsOnly)
 	UPointLightComponent* LeftLightComponent;
+	
 	UPROPERTY(VisibleDefaultsOnly)
 	UPointLightComponent* RightLightComponent;
 	
-	// Initalises, attaches, ands sets the position and intensity of all light components
+	// Initialises, attaches, ands sets the position and intensity of all light components
 	void SetupLightComponents();
 	
 	// Set the colour of the light underneath the car
-	void SetUnderGlowColour();
+	void SetUnderGlowColour() const;
 	
 public:	
 	// Called every frame

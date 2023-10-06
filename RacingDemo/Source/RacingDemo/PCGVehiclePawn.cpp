@@ -22,7 +22,6 @@ void APCGVehiclePawn::BeginPlay()
 	ProceduralComponent->GenerateRandomVehicle(VehicleRarity, VehicleStats);
 	ApplyWeightDistribution();
 	GenerateProceduralMaterial();
-	//ApplyMaterials();
 	SetUnderGlowColour();
 	CurrentFuel = VehicleStats.MaxFuelCapacity;
 }
@@ -95,37 +94,45 @@ void APCGVehiclePawn::SetupLightComponents()
 	RightLightComponent->CastShadows = false;
 }
 
-void APCGVehiclePawn::SetUnderGlowColour()
+void APCGVehiclePawn::SetUnderGlowColour() const
 {
-	switch (VehicleRarity)
+	if (FrontLightComponent && BackLightComponent && LeftLightComponent && RightLightComponent)
 	{
-	case EVehicleRarity::Legendary:
-		FrontLightComponent->SetLightColor(FColor::Yellow);
-		BackLightComponent->SetLightColor(FColor::Yellow);
-		LeftLightComponent->SetLightColor(FColor::Yellow);
-		RightLightComponent->SetLightColor(FColor::Yellow);
-		break;
-	case EVehicleRarity::Master:
-		FrontLightComponent->SetLightColor(FColor(255, 0, 150));
-		BackLightComponent->SetLightColor(FColor(255, 0, 150));
-		LeftLightComponent->SetLightColor(FColor(255, 0, 150));
-		RightLightComponent->SetLightColor(FColor(255, 0, 150));
-		break;
-	case EVehicleRarity::Rare:
-		FrontLightComponent->SetLightColor(FColor::Blue);
-		BackLightComponent->SetLightColor(FColor::Blue);
-		LeftLightComponent->SetLightColor(FColor::Blue);
-		RightLightComponent->SetLightColor(FColor::Blue);
-		break;
-	case EVehicleRarity::Common:
-		FrontLightComponent->SetLightColor(FColor::White);
-		BackLightComponent->SetLightColor(FColor::White);
-		LeftLightComponent->SetLightColor(FColor::White);
-		RightLightComponent->SetLightColor(FColor::White);
-		break;
-	default:
-		break;
+		switch (VehicleRarity)
+		{
+		case EVehicleRarity::Legendary:
+			FrontLightComponent->SetLightColor(FColor::Yellow);
+			BackLightComponent->SetLightColor(FColor::Yellow);
+			LeftLightComponent->SetLightColor(FColor::Yellow);
+			RightLightComponent->SetLightColor(FColor::Yellow);
+			break;
+		case EVehicleRarity::Master:
+			FrontLightComponent->SetLightColor(FColor(255, 0, 150));
+			BackLightComponent->SetLightColor(FColor(255, 0, 150));
+			LeftLightComponent->SetLightColor(FColor(255, 0, 150));
+			RightLightComponent->SetLightColor(FColor(255, 0, 150));
+			break;
+		case EVehicleRarity::Rare:
+			FrontLightComponent->SetLightColor(FColor::Blue);
+			BackLightComponent->SetLightColor(FColor::Blue);
+			LeftLightComponent->SetLightColor(FColor::Blue);
+			RightLightComponent->SetLightColor(FColor::Blue);
+			break;
+		case EVehicleRarity::Common:
+			FrontLightComponent->SetLightColor(FColor::White);
+			BackLightComponent->SetLightColor(FColor::White);
+			LeftLightComponent->SetLightColor(FColor::White);
+			RightLightComponent->SetLightColor(FColor::White);
+			break;
+		default:
+			break;
 		}
+	}
+	else
+	{
+		// Handle null pointers or other issues here
+		UE_LOG(LogTemp, Error, TEXT("One or more light components are null in SetUnderGlowColour()"));
+	}
 }
 
 // Called every frame
