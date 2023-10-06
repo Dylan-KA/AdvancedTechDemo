@@ -26,6 +26,7 @@ void APCGVehiclePawn::BeginPlay()
 	CurrentFuel = VehicleStats.MaxFuelCapacity;
 }
 
+// If vehicle is driving then decrease amount of fuel
 void APCGVehiclePawn::UpdateFuelAmount(float DeltaTime)
 {
 	if (MyVehicleMovementComponent->GetForwardSpeed() > 0.0f)
@@ -35,6 +36,9 @@ void APCGVehiclePawn::UpdateFuelAmount(float DeltaTime)
 	}
 }
 
+// Generates and applies a procedural material
+// Colour is set to the rarity of the car
+// other values are randomly chosen (roughness, metallic, specular)
 void APCGVehiclePawn::GenerateProceduralMaterial()
 {
 	// Get the material for the chassis
@@ -67,6 +71,8 @@ void APCGVehiclePawn::GenerateProceduralMaterial()
 	}
 }
 
+// Initialises and attaches all light components to the vehicle
+// also sets the position and intensity of all light components
 void APCGVehiclePawn::SetupLightComponents()
 {
 	FrontLightComponent = CreateDefaultSubobject<UPointLightComponent>("Front Light");
@@ -94,6 +100,7 @@ void APCGVehiclePawn::SetupLightComponents()
 	RightLightComponent->CastShadows = false;
 }
 
+// Sets the colour of the light underneath the car based on rarity
 void APCGVehiclePawn::SetUnderGlowColour() const
 {
 	if (FrontLightComponent && BackLightComponent && LeftLightComponent && RightLightComponent)
@@ -139,7 +146,9 @@ void APCGVehiclePawn::SetUnderGlowColour() const
 void APCGVehiclePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
+	// Manage fuel system, update fuel amount,
+	// if out of fuel then prevent vehicle from driving
 	if (CurrentFuel <= 0.0f && !bIsOutOfFuel)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Out of fuel"))

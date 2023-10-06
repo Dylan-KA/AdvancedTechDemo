@@ -103,20 +103,18 @@ protected:
 	// Under-glow light components
 	UPROPERTY(VisibleDefaultsOnly)
 	UPointLightComponent* FrontLightComponent;
-	
 	UPROPERTY(VisibleDefaultsOnly)
 	UPointLightComponent* BackLightComponent;
-	
 	UPROPERTY(VisibleDefaultsOnly)
 	UPointLightComponent* LeftLightComponent;
-	
 	UPROPERTY(VisibleDefaultsOnly)
 	UPointLightComponent* RightLightComponent;
 	
-	// Initialises, attaches, ands sets the position and intensity of all light components
+	// Initialises and attaches all light components to the vehicle
+	// also sets the position and intensity of all light components
 	void SetupLightComponents();
 	
-	// Set the colour of the light underneath the car
+	// Sets the colour of the light underneath the car based on rarity
 	void SetUnderGlowColour() const;
 	
 public:	
@@ -126,6 +124,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Blueprint event which sets the CentreOfMassOffset for the mesh
 	UFUNCTION(BlueprintImplementableEvent, Category = "PCG Vehicle Pawn")
 	void ApplyWeightDistribution();
 
